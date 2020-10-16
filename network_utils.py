@@ -1,15 +1,18 @@
-import urllib.request
-import time
-import math
+import gzip
 import random
+import time
+import urllib.request
 
 
 def net_wait(second):
     # 避免操作太快被封ip,两次请求之间需要等待
-    time.sleep(math.ceil(random.random()) * second)
+    time.sleep(random.random() * second)
 
 
-def get_full_page(page_url):
+# mode
+# 0 for 晋江/需要解压
+# 1 for 起点/不需要解压
+def get_full_page(page_url, decode='utf-8', mode=0):
     try:
         # 查看headers的方法
         # 打开想访问的网站：F12
@@ -23,7 +26,11 @@ def get_full_page(page_url):
                           r'Chrome/74.0.3729.169 Safari/537.36'}
         req = urllib.request.Request(url=page_url, headers=headers)
         response = urllib.request.urlopen(req)
-        html = response.read().decode('utf-8')
-        return html
+        # 晋江的网页需要解压
+        if mode == 0:
+            return gzip.decompress(response.read()).decode(decode, 'ignore')
+        # 起点的不需要
+        elif mode == 1:
+            return response.read().decode(decode)
     except Exception as msg:
         print('网页获取错误:', msg)

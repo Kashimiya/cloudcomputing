@@ -18,7 +18,7 @@ class JJBook:
     def __init__(self):
         pass
 
-    # 将类转换为字典，以便于使用json.dumps()
+    # 将类转换为字典，以便于使用json.dumps()和打印输出
     def toDict(self):
         return {
             'author': self.author,
@@ -36,3 +36,6 @@ class JJBook:
             'leading': self.leading,
             'supporting': self.supporting
         }
+
+    def print_myself(self):
+        print(self.toDict())

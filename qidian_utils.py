@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+
 import network_utils
 
 
@@ -56,6 +57,8 @@ class QidianPagesLib:
     qidian_girl_prefix = 'mm'
     # 打赏粉丝榜不分女生，也没有页数
     qidian_fan_rank_pages = {'打赏粉丝榜': 'https://www.qidian.com/rank/fans', }
+    # 编码格式
+    qidian_decode = 'utf-8'
 
     def __init__(self):
         pass
@@ -67,6 +70,6 @@ if __name__ == '__main__':
     names = []
     for i in range(3):
         network_utils.net_wait(3)
-        names = names + parse_qidian_rank(network_utils.get_full_page(urls[i]))
+        names = names + parse_qidian_rank(network_utils.get_full_page(urls[i], mode=1))
     info = format_qidian_rank(names)
     print(info)

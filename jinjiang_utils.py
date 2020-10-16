@@ -2,6 +2,22 @@ import re
 
 from bs4 import BeautifulSoup
 
+import network_utils
+from jinjiang_bookinfo import JJBook
+
+
+#  输入：原结构，如'\n                                    原创-纯爱-架空历史-爱情                                '
+#  输出：目标结构，如['原创','纯爱','架空历史','剧情']
+def get_features(feat):
+    feat = re.sub("\n| ", '', feat)
+    return feat.split('-')
+
+
+#  输入：原结构，如'\n                                    轻松                                '
+#  输出：目标结构，如'轻松'
+def get_style(style):
+    return re.sub("\n| ", '', style)
+
 
 # 替换全角括号
 def replaceAllFullWidth(s):
@@ -14,20 +30,21 @@ def replaceAllFullWidth(s):
     return a
 
 
-# 针对晋江索引网站的一个parse方法
+# 针对晋江索引网站的爬取
 def parse_jinjiang_index(page_html):
-    res = []
+    if page_html is None:
+        return [[], []]
     names_a = []
     names_td = []
     soup = BeautifulSoup(page_html, 'html.parser')
     # 选取table类标签，class为cytable，获取书本列表
     books = soup.find_all('table', class_='cytable')
     dowload_soup = BeautifulSoup(str(books), 'html.parser')
-    # 选取a类标签，获取作者、书名、书籍首页
+    # 选取a类标签，获取0 作者、1 书名、2 书籍首页
     for name in dowload_soup.find_all('a'):
         names_a.append(name.string)
         if name.get('title') is not None:
-            names_a.append(name.get('href'))
+            names_a.append('http://www.jjwxc.net/' + name.get('href'))
     # 选取td类标签，筛选到的有6个
     # 0 原创性-性向-时代-类型
     # 1 风格 2 包含着是否完结的一个html，个人感觉没必要 3 字数
@@ -44,19 +61,21 @@ def parse_jinjiang_index(page_html):
 
 # 针对晋江书本主页的信息爬取
 def parse_jinjiang_onebook(page_html):
+    if page_html is None:
+        return [['GET FAILED'], ['GET FAILED'], ['GET FAILED']]
     tags = []
     leading = []
     supporting = []
-    soup = BeautifulSoup(page_html, 'html-parser')
+    soup = BeautifulSoup(page_html, 'html.parser')
     # 选取div类标签，class为smallreadbody，获取书本介绍栏
     all_info = soup.find_all('div', class_='smallreadbody')
-    download_soup = BeautifulSoup(all_info, 'html.parser')
+    download_soup = BeautifulSoup(str(all_info), 'html.parser')
     # 选取a类标签，style为text-decoration:none;color: red;，获取标签
     for tag in download_soup.find_all('a', style='text-decoration:none;color: red;'):
         tags.append(tag.string)
     # 选取span类标签，class为bluetext，获取主角和配角
     for info in download_soup.find_all('span', class_='bluetext'):
-        info_strs = info.string.split('┃')
+        info_strs = info.string.split(' ┃ ')
         if len(info_strs[0]) > 9:
             leading_str = info_strs[0][9:]
             leading_str = replaceAllFullWidth(leading_str)
@@ -70,7 +89,43 @@ def parse_jinjiang_onebook(page_html):
     return [tags, leading, supporting]
 
 
-# TODO 对索引网站获得的信息进行提取/写入/存储
+# 获取书籍首页信息以及
+# 格式化输出晋江书籍信息
+# index_info: 索引页包含的信息
+# count: 每一页最多爬几本书，默认-1即所有
+# return 书籍(JJBook)数组
+def format_jinjiang_bookinfo(index_info, count=-1):
+    res = []
+    counter = 0
+    for i in range(0, int(len(index_info[0]) / 3)):
+        if count != -1 and counter >= count:
+            return res
+        temp = JJBook()
+        temp.author = index_info[0][3 * i]
+        temp.name = index_info[0][3 * i + 1]
+        temp.web_url = index_info[0][3 * i + 2]
+        features = get_features(index_info[1][6 * i])
+        temp.originality = features[0]
+        temp.disposition = features[1]
+        temp.times = features[2]
+        temp.type = features[3]
+        temp.style = get_style(index_info[1][6 * i + 1])
+        temp.word_number = index_info[1][6 * i + 3]
+        temp.score = index_info[1][6 * i + 4]
+        temp.pub_date = index_info[1][6 * i + 5]
+        network_utils.net_wait(2)
+        onebook_html = network_utils.get_full_page(temp.web_url, 'gb18030', mode=0)
+        if onebook_html is None:
+            print('图书主页获取失败！主页URL:', temp.web_url)
+            continue
+        counter += 1
+        onebook_info = parse_jinjiang_onebook(onebook_html)
+        temp.tags = onebook_info[0]
+        temp.leading = onebook_info[1]
+        temp.supporting = onebook_info[2]
+        res.append(temp)
+    return res
+
 
 class JinjiangPagesLib:
     # 晋江索引网址，以下是参数列表
@@ -118,5 +173,21 @@ class JinjiangPagesLib:
                      'fg0=0&' \
                      'collectiontypes=ors&null=0&searchkeywords='
 
+    # 编码格式
+    jinjiang_decode = 'gb18030'
+
+    # 晋江前缀
+    jinjiang_prefix = 'http://www.jjwxc.net/'
+
     def __init__(self):
         pass
+
+
+if __name__ == '__main__':
+    # 测试
+    lib = JinjiangPagesLib()
+    url = lib.jinjiang_index
+    index_info = parse_jinjiang_index(network_utils.get_full_page(url, lib.jinjiang_decode, mode=0))
+    infos = format_jinjiang_bookinfo(index_info, 10)
+    for info in infos:
+        info.print_myself()
