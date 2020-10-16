@@ -18,7 +18,7 @@ class JJBook:
     def __init__(self):
         pass
 
-    # 将类转换为字典，以便于使用json.dumps()和打印输出
+    # 将类转换为字典，以便于使用json.dump()和打印输出
     def toDict(self):
         return {
             'author': self.author,
