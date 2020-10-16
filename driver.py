@@ -46,5 +46,6 @@ class Driver:
 if __name__ == '__main__':
     target_dir = '../data/'  # 目标文件夹
     driver = Driver()
+    # 读1-100页到本地
     for i in range(1, 100, 10):
         driver.write_pages(i, target_dir)
