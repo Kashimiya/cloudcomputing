@@ -1,3 +1,5 @@
+import json
+
 import jinjiang_utils as jju
 import network_utils
 
@@ -33,19 +35,19 @@ class Driver:
             infos = jju.format_jinjiang_bookinfo(index_info)
             all_infos.extend(infos)
         with open(target, 'w') as file:
-            file.write('{\n')
+            file.write('[\n')
             for i in range(len(all_infos)):
-                file.write(str(all_infos[i].toDict()))
-                print(str(all_infos[i].toDict()))
+                file.write(json.dumps(all_infos[i].__dict__).encode('gb18030').decode('unicode_escape'))
                 if i != len(all_infos) - 1:
                     file.write(',')
                 file.write('\n')
-            file.write('}\n')
+            file.write(']\n')
 
 
 if __name__ == '__main__':
     target_dir = '../data/'  # 目标文件夹
     driver = Driver()
-    # 读1-100页到本地
-    for i in range(1, 100, 10):
+    # 读1-10页到本地
+    for i in range(1, 300, 10):
         driver.write_pages(i, target_dir)
+        network_utils.net_wait(3)
