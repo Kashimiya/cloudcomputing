@@ -13,10 +13,10 @@ class Driver:
     # path: 目标文件夹
     def write_pages(self, start, path):
         base = self.lib.jinjiang_index
-        target = path + 'page' + str(start) + '-' + str(start + 0) + '.json'
+        target = path + 'page' + str(start) + '-' + str(start + 9) + '.json'
         postfix = '&page='
         all_infos = []
-        for i in range(start, start + 1):
+        for i in range(start, start + 10):
             page = postfix + str(i)
             url = base + page
             html = network_utils.get_full_page(url, self.lib.jinjiang_decode, mode=0)
