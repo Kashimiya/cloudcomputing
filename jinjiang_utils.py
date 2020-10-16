@@ -117,7 +117,13 @@ def format_jinjiang_bookinfo(index_info, count=-1):
         onebook_html = network_utils.get_full_page(temp.web_url, 'gb18030', mode=0)
         if onebook_html is None:
             print('图书主页获取失败！主页URL:', temp.web_url)
-            continue
+            print('尝试重试')
+            onebook_html = network_utils.get_full_page(temp.web_url, 'gb18030', mode=1)
+            if onebook_html is None:
+                print('尝试失败！')
+                continue
+            else:
+                print('尝试成功！')
         counter += 1
         onebook_info = parse_jinjiang_onebook(onebook_html)
         temp.tags = onebook_info[0]
@@ -171,7 +177,9 @@ class JinjiangPagesLib:
                      'sd0=0&' \
                      'lx0=0&' \
                      'fg0=0&' \
-                     'collectiontypes=ors&null=0&searchkeywords='
+                     'sortType=0&' \
+                     'isfinish=0&' \
+                     'collectiontypes=ors&searchkeywords='
 
     # 编码格式
     jinjiang_decode = 'gb18030'

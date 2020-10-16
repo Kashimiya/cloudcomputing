@@ -31,6 +31,6 @@ def get_full_page(page_url, decode='utf-8', mode=0):
             return gzip.decompress(response.read()).decode(decode, 'ignore')
         # 起点的不需要
         elif mode == 1:
-            return response.read().decode(decode)
+            return response.read().decode(decode, 'ignore')
     except Exception as msg:
         print('网页获取错误:', msg)
