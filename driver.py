@@ -45,6 +45,6 @@ class Driver:
 
 if __name__ == '__main__':
     target_dir = '../data/'  # 目标文件夹
-    start_page = 1  # 从第几页开始读
     driver = Driver()
-    driver.write_pages(start_page, target_dir)
+    for i in range(1, 100, 10):
+        driver.write_pages(i, target_dir)
