@@ -1,6 +1,17 @@
+import re
+
 from bs4 import BeautifulSoup
-from jinjiang_bookinfo import JJBook
-import network_utils
+
+
+# 替换全角括号
+def replaceAllFullWidth(s):
+    a = s.replace('（', '(')
+    a = a.replace('）', ')')
+    a = a.replace('【', '[')
+    a = a.replace('】', ']')
+    a = a.replace('，', ',')
+    a = a.replace('、', ',')
+    return a
 
 
 # 针对晋江索引网站的一个parse方法
@@ -9,7 +20,7 @@ def parse_jinjiang_index(page_html):
     names_a = []
     names_td = []
     soup = BeautifulSoup(page_html, 'html.parser')
-    # 选取table类标签，class为cytable
+    # 选取table类标签，class为cytable，获取书本列表
     books = soup.find_all('table', class_='cytable')
     dowload_soup = BeautifulSoup(str(books), 'html.parser')
     # 选取a类标签，获取作者、书名、书籍首页
@@ -28,9 +39,35 @@ def parse_jinjiang_index(page_html):
             continue
         else:
             names_td.append(name.string)
-    res.append(names_a)
-    res.append(names_td)
-    return res
+    return [names_a, names_td]
+
+
+# 针对晋江书本主页的信息爬取
+def parse_jinjiang_onebook(page_html):
+    tags = []
+    leading = []
+    supporting = []
+    soup = BeautifulSoup(page_html, 'html-parser')
+    # 选取div类标签，class为smallreadbody，获取书本介绍栏
+    all_info = soup.find_all('div', class_='smallreadbody')
+    download_soup = BeautifulSoup(all_info, 'html.parser')
+    # 选取a类标签，style为text-decoration:none;color: red;，获取标签
+    for tag in download_soup.find_all('a', style='text-decoration:none;color: red;'):
+        tags.append(tag.string)
+    # 选取span类标签，class为bluetext，获取主角和配角
+    for info in download_soup.find_all('span', class_='bluetext'):
+        info_strs = info.string.split('┃')
+        if len(info_strs[0]) > 9:
+            leading_str = info_strs[0][9:]
+            leading_str = replaceAllFullWidth(leading_str)
+            leading_str = re.sub(u"\\(.*?\\)|\\{.*?}|\\[.*?]", "", leading_str)
+            leading = leading_str.split(',')
+        if len(info_strs[1]) > 3:
+            supporting_str = info_strs[1][3:]
+            supporting_str = replaceAllFullWidth(supporting_str)
+            supporting_str = re.sub(u"\\(.*?\\)|\\{.*?}|\\[.*?]", "", supporting_str)
+            supporting = supporting_str.split(',')
+    return [tags, leading, supporting]
 
 
 # TODO 对索引网站获得的信息进行提取/写入/存储
