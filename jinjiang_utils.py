@@ -118,10 +118,10 @@ def format_jinjiang_bookinfo(index_info, session, count=-1):
         if len(features) < 4:
             print('第', i + 1, '本书features数据格式错误！图书主页URL:', temp.web_url)
             print('错误段:', index_info[1][6 * i])
-            temp.originality = '随笔'
-            temp.disposition = '随笔'
-            temp.times = '随笔'
-            temp.type = '随笔'
+            temp.originality = features[0]
+            temp.disposition = features[0]
+            temp.times = features[0]
+            temp.type = features[0]
         else:
             temp.originality = features[0]
             temp.disposition = features[1]
