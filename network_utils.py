@@ -39,7 +39,7 @@ def net_wait(second):
 # 获取网页源代码
 # page_url: 网页url
 # session: 当前会话
-def get_full_page(page_url, session, encoding='utf-8'):
+def get_full_page(page_url, session, encoding='utf-8', mode=0):
     try:
         # 查看headers的方法
         # 打开想访问的网站：F12
@@ -52,7 +52,10 @@ def get_full_page(page_url, session, encoding='utf-8'):
             'User-Agent': r'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
                           r'Chrome/74.0.3729.169 Safari/537.36'}
         response = session.get(url=page_url, headers=headers)
-        response.encoding = encoding
+        if mode == 0:
+            response.encoding = encoding
+        elif mode == 1:
+            response.encoding = response.apparent_encoding
         return response.text
     except Exception as msg:
         print('网页获取错误:', msg)

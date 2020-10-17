@@ -76,6 +76,9 @@ def parse_jinjiang_onebook(page_html):
     # 选取span类标签，class为bluetext，获取主角和配角
     for info in download_soup.find_all('span', class_='bluetext'):
         info_strs = info.string.split(' ┃ ')
+        if len(info_strs) < 3:
+            print('图书info获取错误，猜测index页面获取失败！尝试重试！')
+            return ['ERROR']
         if len(info_strs[0]) > 9:
             leading_str = info_strs[0][9:]
             leading_str = replaceAllFullWidth(leading_str)
@@ -106,10 +109,18 @@ def format_jinjiang_bookinfo(index_info, session, count=-1):
         temp.name = index_info[0][3 * i + 1]
         temp.web_url = index_info[0][3 * i + 2]
         features = get_features(index_info[1][6 * i])
-        temp.originality = features[0]
-        temp.disposition = features[1]
-        temp.times = features[2]
-        temp.type = features[3]
+        if len(features) < 4:
+            print('图书features数据格式错误！图书主页URL:', temp.web_url)
+            print('错误段:', index_info[1][6 * i])
+            temp.originality = '随笔'
+            temp.disposition = '随笔'
+            temp.times = '随笔'
+            temp.type = '随笔'
+        else:
+            temp.originality = features[0]
+            temp.disposition = features[1]
+            temp.times = features[2]
+            temp.type = features[3]
         temp.style = get_style(index_info[1][6 * i + 1])
         temp.word_number = index_info[1][6 * i + 3]
         temp.score = index_info[1][6 * i + 4]
@@ -122,12 +133,20 @@ def format_jinjiang_bookinfo(index_info, session, count=-1):
             print('尝试重试')
             onebook_html = network_utils.get_full_page(temp.web_url, session, lib.jinjiang_decode)
             if onebook_html is None:
-                print('尝试失败！')
+                print('重新获取失败！')
                 continue
             else:
-                print('尝试成功！')
+                print('重新获取成功！')
         counter += 1
         onebook_info = parse_jinjiang_onebook(onebook_html)
+        if onebook_info[0] == 'ERROR':
+            onebook_html = network_utils.get_full_page(temp.web_url, session, lib.jinjiang_decode, mode=1)
+            onebook_info = parse_jinjiang_onebook(onebook_html)
+            if onebook_info[0] == 'ERROR':
+                print('重新获取失败！')
+                continue
+            else:
+                print('重新获取成功！')
         temp.tags = onebook_info[0]
         temp.leading = onebook_info[1]
         temp.supporting = onebook_info[2]
