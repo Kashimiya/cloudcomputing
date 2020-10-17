@@ -1,7 +1,34 @@
-import gzip
 import random
 import time
-import urllib.request
+
+import requests
+import requests.cookies as rc
+from selenium import webdriver
+
+
+# 登录目标网站
+# url: 要登录的网站
+# option_path: chrome浏览器配置项路径
+def login(url, option_path):
+    option = webdriver.ChromeOptions()
+    option.add_argument('--user-data-dir='
+                        + option_path)
+    driver = webdriver.Chrome(options=option)  # 使用谷歌chrome登录，电脑没有chrome的自行下载
+    driver.get(url)
+    time.sleep(3)
+    allcookies = driver.get_cookies()  # 获取浏览器所有的cookie
+    driver.quit()
+    print("成功获取cookies！")
+    s = requests.session()
+    try:
+        c = rc.RequestsCookieJar()
+        for i in allcookies:
+            c.set(i['name'], i['value'])
+        s.cookies.update(c)
+    except Exception as msg:
+        print(u'添加cookies时出错：', msg)
+
+    return s
 
 
 def net_wait(second):
@@ -9,10 +36,10 @@ def net_wait(second):
     time.sleep(random.random() * second)
 
 
-# mode
-# 0 for 晋江/需要解压
-# 1 for 起点/不需要解压
-def get_full_page(page_url, decode='utf-8', mode=0):
+# 获取网页源代码
+# page_url: 网页url
+# session: 当前会话
+def get_full_page(page_url, session, encoding='utf-8'):
     try:
         # 查看headers的方法
         # 打开想访问的网站：F12
@@ -24,13 +51,8 @@ def get_full_page(page_url, decode='utf-8', mode=0):
         headers = {
             'User-Agent': r'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
                           r'Chrome/74.0.3729.169 Safari/537.36'}
-        req = urllib.request.Request(url=page_url, headers=headers)
-        response = urllib.request.urlopen(req)
-        # 晋江的网页需要解压
-        if mode == 0:
-            return gzip.decompress(response.read()).decode(decode, 'ignore')
-        # 起点的不需要
-        elif mode == 1:
-            return response.read().decode(decode, 'ignore')
+        response = session.get(url=page_url, headers=headers)
+        response.encoding = encoding
+        return response.text
     except Exception as msg:
         print('网页获取错误:', msg)

@@ -75,6 +75,7 @@ def parse_jinjiang_onebook(page_html):
         tags.append(tag.string)
     # 选取span类标签，class为bluetext，获取主角和配角
     for info in download_soup.find_all('span', class_='bluetext'):
+        print(info)
         info_strs = info.string.split(' ┃ ')
         if len(info_strs[0]) > 9:
             leading_str = info_strs[0][9:]
@@ -94,7 +95,8 @@ def parse_jinjiang_onebook(page_html):
 # index_info: 索引页包含的信息
 # count: 每一页最多爬几本书，默认-1即所有
 # return 书籍(JJBook)数组
-def format_jinjiang_bookinfo(index_info, count=-1):
+def format_jinjiang_bookinfo(index_info, session, count=-1):
+    lib = JinjiangPagesLib()
     res = []
     counter = 0
     for i in range(0, int(len(index_info[0]) / 3)):
@@ -114,11 +116,11 @@ def format_jinjiang_bookinfo(index_info, count=-1):
         temp.score = index_info[1][6 * i + 4]
         temp.pub_date = index_info[1][6 * i + 5]
         network_utils.net_wait(2)
-        onebook_html = network_utils.get_full_page(temp.web_url, 'gb18030', mode=0)
+        onebook_html = network_utils.get_full_page(temp.web_url, session, lib.jinjiang_decode)
         if onebook_html is None:
             print('图书主页获取失败！主页URL:', temp.web_url)
             print('尝试重试')
-            onebook_html = network_utils.get_full_page(temp.web_url, 'gb18030', mode=1)
+            onebook_html = network_utils.get_full_page(temp.web_url, session, lib.jinjiang_decode)
             if onebook_html is None:
                 print('尝试失败！')
                 continue
@@ -189,13 +191,3 @@ class JinjiangPagesLib:
 
     def __init__(self):
         pass
-
-
-if __name__ == '__main__':
-    # 测试
-    lib = JinjiangPagesLib()
-    url = lib.jinjiang_index
-    index_info = parse_jinjiang_index(network_utils.get_full_page(url, lib.jinjiang_decode, mode=0))
-    infos = format_jinjiang_bookinfo(index_info, 10)
-    for info in infos:
-        info.print_myself()

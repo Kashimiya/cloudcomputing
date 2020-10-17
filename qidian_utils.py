@@ -1,7 +1,5 @@
 from bs4 import BeautifulSoup
 
-import network_utils
-
 
 # 针对起点爬取排名的一个parse方法
 # 可以当作示例使用
@@ -62,14 +60,3 @@ class QidianPagesLib:
 
     def __init__(self):
         pass
-
-
-if __name__ == '__main__':
-    # 爬取前3页作为测试
-    urls = ["https://www.qidian.com/rank/hotsales?style=1&page={}".format(str(i)) for i in range(1, 4)]
-    names = []
-    for i in range(3):
-        network_utils.net_wait(3)
-        names = names + parse_qidian_rank(network_utils.get_full_page(urls[i], mode=1))
-    info = format_qidian_rank(names)
-    print(info)

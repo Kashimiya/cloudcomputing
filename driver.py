@@ -7,7 +7,9 @@ import network_utils
 class Driver:
     lib = jju.JinjiangPagesLib()
 
-    def __init__(self):
+    # 初始化: 登录网址，建立会话
+    def __init__(self, url, option_path):
+        self.session = network_utils.login(url, option_path=option_path)
         pass
 
     # start的范围: range(1,990,10)
@@ -21,18 +23,18 @@ class Driver:
         for i in range(start, start + 10):
             page = postfix + str(i)
             url = base + page
-            html = network_utils.get_full_page(url, self.lib.jinjiang_decode, mode=0)
+            html = network_utils.get_full_page(url, self.session, encoding=self.lib.jinjiang_decode)
             if html is None:
                 print('索引页获取失败！索引页URL:', url)
                 print('尝试重试')
-                html = network_utils.get_full_page(url, self.lib.jinjiang_decode, mode=1)
+                html = network_utils.get_full_page(url, self.session, encoding=self.lib.jinjiang_decode)
                 if html is None:
                     print('尝试失败！')
                     continue
                 else:
                     print('再次获取成功！')
             index_info = jju.parse_jinjiang_index(html)
-            infos = jju.format_jinjiang_bookinfo(index_info)
+            infos = jju.format_jinjiang_bookinfo(index_info, session=self.session)
             all_infos.extend(infos)
         with open(target, 'w') as file:
             file.write('[\n')
@@ -46,8 +48,8 @@ class Driver:
 
 if __name__ == '__main__':
     target_dir = '../data/'  # 目标文件夹
-    driver = Driver()
+    driver = Driver('http://www.jjwxc.net/', 'C:\\Users\\Kashimiya\\AppData\\Local\\Google\\Chrome\\User Data1')
     # 读1-10页到本地
-    for i in range(1, 300, 10):
+    for i in range(11, 20, 10):
         driver.write_pages(i, target_dir)
         network_utils.net_wait(3)
