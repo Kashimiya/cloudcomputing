@@ -33,6 +33,7 @@ class Driver:
                     continue
                 else:
                     print('再次获取成功！')
+            print('--------------------正在爬取第', i, '页--------------------')
             index_info = jju.parse_jinjiang_index(html)
             infos = jju.format_jinjiang_bookinfo(index_info, session=self.session)
             all_infos.extend(infos)

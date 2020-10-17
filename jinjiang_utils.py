@@ -75,7 +75,6 @@ def parse_jinjiang_onebook(page_html):
         tags.append(tag.string)
     # 选取span类标签，class为bluetext，获取主角和配角
     for info in download_soup.find_all('span', class_='bluetext'):
-        print(info)
         info_strs = info.string.split(' ┃ ')
         if len(info_strs[0]) > 9:
             leading_str = info_strs[0][9:]
@@ -116,6 +115,7 @@ def format_jinjiang_bookinfo(index_info, session, count=-1):
         temp.score = index_info[1][6 * i + 4]
         temp.pub_date = index_info[1][6 * i + 5]
         network_utils.net_wait(2)
+        print('正在爬取第', i + 1, '本!')
         onebook_html = network_utils.get_full_page(temp.web_url, session, lib.jinjiang_decode)
         if onebook_html is None:
             print('图书主页获取失败！主页URL:', temp.web_url)
