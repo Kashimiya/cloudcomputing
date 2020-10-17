@@ -75,9 +75,14 @@ def parse_jinjiang_onebook(page_html):
         tags.append(tag.string)
     # 选取span类标签，class为bluetext，获取主角和配角
     for info in download_soup.find_all('span', class_='bluetext'):
+        if info.string is None:
+            print('图书info格式错误！设置为默认值')
+            leading = ['江雪']
+            supporting = ['出来一个是一个']
+            continue
         info_strs = info.string.split(' ┃ ')
         if len(info_strs) < 3:
-            print('图书info获取错误，猜测index页面获取失败！尝试重试！')
+            print('图书info获取错误！尝试重试！')
             return ['ERROR']
         if len(info_strs[0]) > 9:
             leading_str = info_strs[0][9:]

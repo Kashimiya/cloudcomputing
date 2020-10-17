@@ -51,6 +51,6 @@ if __name__ == '__main__':
     target_dir = '../data/'  # 目标文件夹
     driver = Driver('http://www.jjwxc.net/', 'C:\\Users\\Kashimiya\\AppData\\Local\\Google\\Chrome\\User Data1')
     # 读1-10页到本地
-    for i in range(11, 20, 10):
+    for i in range(51, 60, 10):
         driver.write_pages(i, target_dir)
         network_utils.net_wait(3)
