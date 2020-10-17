@@ -66,6 +66,7 @@ def parse_jinjiang_onebook(page_html):
     tags = []
     leading = []
     supporting = []
+    msg = 0
     soup = BeautifulSoup(page_html, 'html.parser')
     # 选取div类标签，class为smallreadbody，获取书本介绍栏
     all_info = soup.find_all('div', class_='smallreadbody')
@@ -76,10 +77,10 @@ def parse_jinjiang_onebook(page_html):
     # 选取span类标签，class为bluetext，获取主角和配角
     for info in download_soup.find_all('span', class_='bluetext'):
         if info.string is None:
-            print('图书info格式错误！设置为默认值')
             leading = ['江雪']
             supporting = ['出来一个是一个']
-            continue
+            msg = 1
+            break
         info_strs = info.string.split(' ┃ ')
         if len(info_strs) < 3:
             print('图书info获取错误！尝试重试！')
@@ -94,7 +95,7 @@ def parse_jinjiang_onebook(page_html):
             supporting_str = replaceAllFullWidth(supporting_str)
             supporting_str = re.sub(u"\\(.*?\\)|\\{.*?}|\\[.*?]", "", supporting_str)
             supporting = supporting_str.split(',')
-    return [tags, leading, supporting]
+    return [tags, leading, supporting, msg]
 
 
 # 获取书籍首页信息以及
@@ -115,7 +116,7 @@ def format_jinjiang_bookinfo(index_info, session, count=-1):
         temp.web_url = index_info[0][3 * i + 2]
         features = get_features(index_info[1][6 * i])
         if len(features) < 4:
-            print('图书features数据格式错误！图书主页URL:', temp.web_url)
+            print('第', i + 1, '本书features数据格式错误！图书主页URL:', temp.web_url)
             print('错误段:', index_info[1][6 * i])
             temp.originality = '随笔'
             temp.disposition = '随笔'
@@ -131,7 +132,6 @@ def format_jinjiang_bookinfo(index_info, session, count=-1):
         temp.score = index_info[1][6 * i + 4]
         temp.pub_date = index_info[1][6 * i + 5]
         network_utils.net_wait(2)
-        print('正在爬取第', i + 1, '本!')
         onebook_html = network_utils.get_full_page(temp.web_url, session, lib.jinjiang_decode)
         if onebook_html is None:
             print('图书主页获取失败！主页URL:', temp.web_url)
@@ -152,6 +152,8 @@ def format_jinjiang_bookinfo(index_info, session, count=-1):
                 continue
             else:
                 print('重新获取成功！')
+        if onebook_info[3] == 1:
+            print('第', i + 1, '本书info不符合规范，已设为默认值!图书主页URL:', temp.web_url)
         temp.tags = onebook_info[0]
         temp.leading = onebook_info[1]
         temp.supporting = onebook_info[2]
