@@ -27,7 +27,7 @@ class Driver:
             if html is None:
                 print('索引页获取失败！索引页URL:', url)
                 print('尝试重试')
-                html = network_utils.get_full_page(url, self.session, encoding=self.lib.jinjiang_decode)
+                html = network_utils.get_full_page(url, self.session, encoding=self.lib.jinjiang_decode, mode=1)
                 if html is None:
                     print('尝试失败！')
                     continue
@@ -37,7 +37,7 @@ class Driver:
             index_info = jju.parse_jinjiang_index(html)
             infos = jju.format_jinjiang_bookinfo(index_info, session=self.session)
             all_infos.extend(infos)
-        with open(target, 'w') as file:
+        with open(target, 'w', encoding='utf-8') as file:
             file.write('[\n')
             for i in range(len(all_infos)):
                 file.write(json.dumps(all_infos[i].__dict__).encode('gb18030').decode('unicode_escape'))
@@ -50,5 +50,5 @@ class Driver:
 if __name__ == '__main__':
     target_dir = '../data/'  # 目标文件夹
     driver = Driver('http://www.jjwxc.net/', 'C:\\Users\\Kashimiya\\AppData\\Local\\Google\\Chrome\\User Data1')
-    for i in range(221, 400, 10):
+    for i in range(0, 200, 10):
         driver.write_pages(i, target_dir)

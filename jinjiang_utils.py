@@ -27,6 +27,12 @@ def replaceAllFullWidth(s):
     a = a.replace('】', ']')
     a = a.replace('，', ',')
     a = a.replace('、', ',')
+    a = a.replace('；', ',')
+    a = a.replace(';', ',')
+    a = a.replace('&', ',')
+    a = a.replace('\\', ',')
+    a = a.replace('/', ',')
+    a = a.replace('|', ',')
     return a
 
 
@@ -67,6 +73,7 @@ def parse_jinjiang_onebook(page_html):
     leading = []
     supporting = []
     msg = 0
+    ERROR = ''
     soup = BeautifulSoup(page_html, 'html.parser')
     # 选取div类标签，class为smallreadbody，获取书本介绍栏
     all_info = soup.find_all('div', class_='smallreadbody')
@@ -77,25 +84,34 @@ def parse_jinjiang_onebook(page_html):
     # 选取span类标签，class为bluetext，获取主角和配角
     for info in download_soup.find_all('span', class_='bluetext'):
         if info.string is None:
-            leading = ['江雪']
-            supporting = ['出来一个是一个']
+            leading = ['***error***']
+            supporting = ['***error***']
             msg = 1
+            ERROR = '[ERROR0]info不符合规范，已设为***error***!图书主页URL:'
             break
         info_strs = info.string.split(' ┃ ')
         if len(info_strs) < 3:
-            print('图书info获取错误！尝试重试！')
-            return ['ERROR']
+            print('图书info获取错误！')
+            print('打印错误段:', info.string)
+            leading = ['***error***']
+            supporting = ['***error***']
+            msg = 1
+            ERROR = '[ERROR1]info获取错误，已设为***error***!图书主页URL:'
+            break
         if len(info_strs[0]) > 9:
             leading_str = info_strs[0][9:]
             leading_str = replaceAllFullWidth(leading_str)
             leading_str = re.sub(u"\\(.*?\\)|\\{.*?}|\\[.*?]", "", leading_str)
             leading = leading_str.split(',')
         if len(info_strs[1]) > 3:
+            if '《' in info_strs[1] or '》' in info_strs[1]:
+                supporting = []
+                break
             supporting_str = info_strs[1][3:]
             supporting_str = replaceAllFullWidth(supporting_str)
             supporting_str = re.sub(u"\\(.*?\\)|\\{.*?}|\\[.*?]", "", supporting_str)
             supporting = supporting_str.split(',')
-    return [tags, leading, supporting, msg]
+    return [tags, leading, supporting, msg, ERROR]
 
 
 # 获取书籍首页信息以及
@@ -116,7 +132,7 @@ def format_jinjiang_bookinfo(index_info, session, count=-1):
         temp.web_url = index_info[0][3 * i + 2]
         features = get_features(index_info[1][6 * i])
         if len(features) < 4:
-            print('第', i + 1, '本书features数据格式错误！图书主页URL:', temp.web_url)
+            print('爬取第', i + 1, '本书时出错：[ERROR2]features数据格式错误！图书主页URL:', temp.web_url)
             print('错误段:', index_info[1][6 * i])
             temp.originality = features[0]
             temp.disposition = features[0]
@@ -131,12 +147,12 @@ def format_jinjiang_bookinfo(index_info, session, count=-1):
         temp.word_number = index_info[1][6 * i + 3]
         temp.score = index_info[1][6 * i + 4]
         temp.pub_date = index_info[1][6 * i + 5]
-        network_utils.net_wait(2)
+        network_utils.net_wait(1.5)
         onebook_html = network_utils.get_full_page(temp.web_url, session, lib.jinjiang_decode)
         if onebook_html is None:
             print('图书主页获取失败！主页URL:', temp.web_url)
             print('尝试重试')
-            onebook_html = network_utils.get_full_page(temp.web_url, session, lib.jinjiang_decode)
+            onebook_html = network_utils.get_full_page(temp.web_url, session, lib.jinjiang_decode, mode=1)
             if onebook_html is None:
                 print('重新获取失败！')
                 continue
@@ -144,16 +160,8 @@ def format_jinjiang_bookinfo(index_info, session, count=-1):
                 print('重新获取成功！')
         counter += 1
         onebook_info = parse_jinjiang_onebook(onebook_html)
-        if onebook_info[0] == 'ERROR':
-            onebook_html = network_utils.get_full_page(temp.web_url, session, lib.jinjiang_decode, mode=1)
-            onebook_info = parse_jinjiang_onebook(onebook_html)
-            if onebook_info[0] == 'ERROR':
-                print('重新获取失败！')
-                continue
-            else:
-                print('重新获取成功！')
         if onebook_info[3] == 1:
-            print('第', i + 1, '本书info不符合规范，已设为默认值!图书主页URL:', temp.web_url)
+            print('爬取第', i + 1, '本书时出错：', onebook_info[4], temp.web_url)
         temp.tags = onebook_info[0]
         temp.leading = onebook_info[1]
         temp.supporting = onebook_info[2]
