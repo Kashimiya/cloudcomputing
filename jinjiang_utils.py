@@ -33,6 +33,9 @@ def replaceAllFullWidth(s):
     a = a.replace('\\', ',')
     a = a.replace('/', ',')
     a = a.replace('|', ',')
+    a = a.replace('等', '')
+    a = a.replace('。', '')
+    a = a.replace('……', '')
     return a
 
 

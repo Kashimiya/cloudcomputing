@@ -50,5 +50,5 @@ class Driver:
 if __name__ == '__main__':
     target_dir = '../data/'  # 目标文件夹
     driver = Driver('http://www.jjwxc.net/', 'C:\\Users\\Kashimiya\\AppData\\Local\\Google\\Chrome\\User Data1')
-    for i in range(0, 200, 10):
+    for i in range(131, 200, 10):
         driver.write_pages(i, target_dir)
