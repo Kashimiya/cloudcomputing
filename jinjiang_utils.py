@@ -132,7 +132,7 @@ def format_jinjiang_bookinfo(index_info, session, count=-1):
         temp.web_url = index_info[0][3 * i + 2]
         features = get_features(index_info[1][6 * i])
         if len(features) < 4:
-            print('爬取第', i + 1, '本书时出错：[ERROR2]features数据格式错误！图书主页URL:', temp.web_url)
+            print('爬取第', i + 1, '本书时出错：[ERROR2]features数据格式错误！自动更换另一种获取方式。图书主页URL:', temp.web_url)
             print('错误段:', index_info[1][6 * i])
             temp.originality = features[0]
             temp.disposition = features[0]
