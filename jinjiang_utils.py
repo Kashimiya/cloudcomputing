@@ -131,48 +131,51 @@ def format_jinjiang_bookinfo(index_info, session, count=-1):
     res = []
     counter = 0
     for i in range(0, int(len(index_info[0]) / 3)):
-        if count != -1 and counter >= count:
-            return res
-        temp = JJBook()
-        temp.author = index_info[0][3 * i]
-        temp.name = index_info[0][3 * i + 1]
-        temp.web_url = index_info[0][3 * i + 2]
-        features = get_features(index_info[1][6 * i])
-        if len(features) < 4:
-            print('爬取第', i + 1, '本书时出错：[ERROR2]features数据格式错误！自动更换另一种获取方式。图书主页URL:', temp.web_url)
-            print('错误段:', index_info[1][6 * i])
-            temp.originality = features[0]
-            temp.disposition = features[0]
-            temp.times = features[0]
-            temp.type = features[0]
-        else:
-            temp.originality = features[0]
-            temp.disposition = features[1]
-            temp.times = features[2]
-            temp.type = features[3]
-        temp.style = get_style(index_info[1][6 * i + 1])
-        temp.word_number = index_info[1][6 * i + 3]
-        temp.score = index_info[1][6 * i + 4]
-        temp.pub_date = index_info[1][6 * i + 5]
-        network_utils.net_wait(1.5)
-        onebook_html = network_utils.get_full_page(temp.web_url, session, lib.jinjiang_decode)
-        if onebook_html is None:
-            print('图书主页获取失败！主页URL:', temp.web_url)
-            print('尝试重试')
-            onebook_html = network_utils.get_full_page(temp.web_url, session, lib.jinjiang_decode, mode=1)
-            if onebook_html is None:
-                print('重新获取失败！')
-                continue
+        try:
+            if count != -1 and counter >= count:
+                return res
+            temp = JJBook()
+            temp.author = index_info[0][3 * i]
+            temp.name = index_info[0][3 * i + 1]
+            temp.web_url = index_info[0][3 * i + 2]
+            features = get_features(index_info[1][6 * i])
+            if len(features) < 4:
+                print('爬取第', i + 1, '本书时出错：[ERROR2]features数据格式错误！自动更换另一种获取方式。图书主页URL:', temp.web_url)
+                print('错误段:', index_info[1][6 * i])
+                temp.originality = features[0]
+                temp.disposition = features[0]
+                temp.times = features[0]
+                temp.type = features[0]
             else:
-                print('重新获取成功！')
-        counter += 1
-        onebook_info = parse_jinjiang_onebook(onebook_html)
-        if onebook_info[3] == 1:
-            print('爬取第', i + 1, '本书时出错：', onebook_info[4], temp.web_url)
-        temp.tags = onebook_info[0]
-        temp.leading = onebook_info[1]
-        temp.supporting = onebook_info[2]
-        res.append(temp)
+                temp.originality = features[0]
+                temp.disposition = features[1]
+                temp.times = features[2]
+                temp.type = features[3]
+            temp.style = get_style(index_info[1][6 * i + 1])
+            temp.word_number = index_info[1][6 * i + 3]
+            temp.score = index_info[1][6 * i + 4]
+            temp.pub_date = index_info[1][6 * i + 5]
+            network_utils.net_wait(1.5)
+            onebook_html = network_utils.get_full_page(temp.web_url, session, lib.jinjiang_decode)
+            if onebook_html is None:
+                print('图书主页获取失败！主页URL:', temp.web_url)
+                print('尝试重试')
+                onebook_html = network_utils.get_full_page(temp.web_url, session, lib.jinjiang_decode, mode=1)
+                if onebook_html is None:
+                    print('重新获取失败！')
+                    continue
+                else:
+                    print('重新获取成功！')
+            counter += 1
+            onebook_info = parse_jinjiang_onebook(onebook_html)
+            if onebook_info[3] == 1:
+                print('爬取第', i + 1, '本书时出错：', onebook_info[4], temp.web_url)
+            temp.tags = onebook_info[0]
+            temp.leading = onebook_info[1]
+            temp.supporting = onebook_info[2]
+            res.append(temp)
+        except Exception as msg:
+            print('网页格式错误：', msg)
     return res
 
 
