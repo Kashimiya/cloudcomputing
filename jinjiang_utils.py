@@ -34,7 +34,7 @@ def replaceAllFullWidth(s):
     a = a.replace('/', ',')
     a = a.replace('|', ',')
     a = a.replace('等', '')
-    a = a.replace('。', '')
+    a = a.replace('。', ',')
     a = a.replace('……', '')
     return a
 
@@ -83,37 +83,41 @@ def parse_jinjiang_onebook(page_html):
     download_soup = BeautifulSoup(str(all_info), 'html.parser')
     # 选取a类标签，style为text-decoration:none;color: red;，获取标签
     for tag in download_soup.find_all('a', style='text-decoration:none;color: red;'):
-        tags.append(tag.string)
+        if tag.string != 'null':
+            tags.append(tag.string)
     # 选取span类标签，class为bluetext，获取主角和配角
     for info in download_soup.find_all('span', class_='bluetext'):
         if info.string is None:
-            leading = ['***error***']
-            supporting = ['***error***']
+            leading = []
+            supporting = []
             msg = 1
-            ERROR = '[ERROR0]info不符合规范，已设为***error***!图书主页URL:'
+            ERROR = '[ERROR0]info不符合规范，已设为空值!图书主页URL:'
             break
         info_strs = info.string.split(' ┃ ')
         if len(info_strs) < 3:
             print('图书info获取错误！')
             print('打印错误段:', info.string)
-            leading = ['***error***']
-            supporting = ['***error***']
+            leading = []
+            supporting = []
             msg = 1
-            ERROR = '[ERROR1]info获取错误，已设为***error***!图书主页URL:'
+            ERROR = '[ERROR1]info获取错误，已设为空值!图书主页URL:'
             break
         if len(info_strs[0]) > 9:
             leading_str = info_strs[0][9:]
             leading_str = replaceAllFullWidth(leading_str)
             leading_str = re.sub(u"\\(.*?\\)|\\{.*?}|\\[.*?]", "", leading_str)
             leading = leading_str.split(',')
+            for name in leading:
+                if '《' in name or '》' in name or len(name) > 4 or len(name) == 0 or name == 'null':
+                    leading.remove(name)
         if len(info_strs[1]) > 3:
-            if '《' in info_strs[1] or '》' in info_strs[1]:
-                supporting = []
-                break
             supporting_str = info_strs[1][3:]
             supporting_str = replaceAllFullWidth(supporting_str)
             supporting_str = re.sub(u"\\(.*?\\)|\\{.*?}|\\[.*?]", "", supporting_str)
             supporting = supporting_str.split(',')
+            for name in supporting:
+                if '《' in name or '》' in name or len(name) > 4 or len(name) == 0 or name == 'null':
+                    supporting.remove(name)
     return [tags, leading, supporting, msg, ERROR]
 
 

@@ -15,8 +15,8 @@ class Driver:
     # start的范围: range(1,990,10)
     # 向本地写入第start页的书籍信息
     # path: 目标文件夹
-    def write_pages(self, start, path):
-        base = self.lib.jinjiang_index
+    def write_pages(self, start, path, base):
+        base = base
         target = path + 'page' + str(start) + '-' + str(start + 9) + '.json'
         postfix = '&page='
         all_infos = []
@@ -50,5 +50,6 @@ class Driver:
 if __name__ == '__main__':
     target_dir = '../data/'  # 目标文件夹
     driver = Driver('http://www.jjwxc.net/', 'C:\\Users\\Kashimiya\\AppData\\Local\\Google\\Chrome\\User Data1')
-    for i in range(131, 200, 10):
-        driver.write_pages(i, target_dir)
+    for i in range(0, 100, 10):
+        driver.write_pages(i, target_dir,
+                           base='http://www.jjwxc.net/bookbase.php?fw0=0&fbsj2010=2010&ycx0=0&xx0=0&mainview0=0&sd0=0&lx0=0&fg0=0&collectiontypes=ors&null=0&searchkeywords=')
