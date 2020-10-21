@@ -6,18 +6,22 @@ import network_utils
 
 class Driver:
     lib = jju.JinjiangPagesLib()
+    yearlib = ['fbsj2010=2010', 'fbsj2011=2011', 'fbsj2012=2012', 'fbsj2013=2013'
+        , 'fbsj2014=2014', 'fbsj2015=2015', 'fbsj2016=2016', 'fbsj2017=2017'
+        , 'fbsj2018=2018', 'fbsj24=24']
 
     # 初始化: 登录网址，建立会话
     def __init__(self, url, option_path):
         self.session = network_utils.login(url, option_path=option_path)
         pass
 
-    # start的范围: range(1,990,10)
+    # year的范围: range(10,20)
     # 向本地写入第start页的书籍信息
     # path: 目标文件夹
-    def write_pages(self, start, path, base):
-        base = base
-        target = path + 'page' + str(start) + '-' + str(start + 9) + '.json'
+    def write_pages(self, start, path, year):
+        base = 'http://www.jjwxc.net/bookbase.php?fw0=0&' + self.yearlib[
+            int(year % 10)] + '&ycx0=0&xx0=0&mainview0=0&sd0=0&lx0=0&fg0=0&collectiontypes=ors&null=0&searchkeywords='
+        target = path + year + 'page' + str(start) + '-' + str(start + 9) + '.json'
         postfix = '&page='
         all_infos = []
         for i in range(start, start + 10):
@@ -50,6 +54,7 @@ class Driver:
 if __name__ == '__main__':
     target_dir = '../data/'  # 目标文件夹
     driver = Driver('http://www.jjwxc.net/', 'C:\\Users\\Kashimiya\\AppData\\Local\\Google\\Chrome\\User Data1')
+    # 19代表2019-2020年
     for i in range(0, 100, 10):
         driver.write_pages(i, target_dir,
-                           base='http://www.jjwxc.net/bookbase.php?fw0=0&fbsj2010=2010&ycx0=0&xx0=0&mainview0=0&sd0=0&lx0=0&fg0=0&collectiontypes=ors&null=0&searchkeywords=')
+                           year=10)
