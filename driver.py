@@ -21,7 +21,7 @@ class Driver:
     def write_pages(self, start, path, year):
         base = 'http://www.jjwxc.net/bookbase.php?fw0=0&' + self.yearlib[
             int(year % 10)] + '&ycx0=0&xx0=0&mainview0=0&sd0=0&lx0=0&fg0=0&collectiontypes=ors&null=0&searchkeywords='
-        target = path + year + 'page' + str(start) + '-' + str(start + 9) + '.json'
+        target = path + str(year) + 'page' + str(start) + '-' + str(start + 9) + '.json'
         postfix = '&page='
         all_infos = []
         for i in range(start, start + 10):
