@@ -1,5 +1,33 @@
 from pyspark import SparkContext, SparkConf
+from pyspark.rdd import RDD
 from pyspark.streaming import StreamingContext
+import json
+import ast
+import preHandler
+import time
+
+path = ['D:/cloud/done_data/name/times_lastname.json', 'D:/cloud/done_data/name/date_firstname.json']
+time.sleep(10)
+preHandler.nameCount()
+
+
+def open_result(f_type):
+    if f_type == 0:
+        try:
+            result1 = open(path[0], 'r', encoding='utf-8')
+            name_dict1 = json.load(result1)
+            result1.close()
+        except Exception as e:
+            name_dict1 = {}
+        return name_dict1
+    else:
+        try:
+            result2 = open(path[1], 'r', encoding='utf-8-sig')
+            name_dict2 = json.load(result2)
+            result2.close()
+        except Exception as e:
+            name_dict2 = {}
+        return name_dict2
 
 
 # 把读入的字符串line处理成列表
@@ -21,12 +49,31 @@ def nameMap(lst, nametype):
     return ((lst[0], lst[1], n.replace(' ', '')) for n in n_lst)
 
 
+def writeFile(rdd: RDD, f_type):
+    num = rdd.count()
+    if num > 0:
+        result_dic = open_result(f_type)
+        print(result_dic)
+        rdd_c = rdd.collect()
+        lst = ast.literal_eval(str(rdd_c))
+        for item in lst:
+            key = item[0]
+            value = item[1]
+            if str(key).replace("'", '') in result_dic.keys():
+                result_dic[str(key).replace("'", '')] = result_dic[str(key).replace("'", '')] + value
+            else:
+                result_dic[str(key).replace("'", '')] = value
+        result = open(path[f_type], 'w', encoding='utf-8')
+        result.write(json.dumps(result_dic).encode('gb18030').decode('unicode_escape'))
+        result.close()
+
+
 conf = SparkConf()
 conf.setAppName('TestDStream')
 conf.setMaster('local')
 sc = SparkContext(conf=conf)
 ssc = StreamingContext(sc, 3)
-lines = ssc.textFileStream('D:/cloud/cleaned_data')
+lines = ssc.textFileStream('D:/cloud/cleaned_data/name')
 
 print(lines)
 single = lines.map(getList)
@@ -45,23 +92,15 @@ date_times_fn = single \
 # map 把(pub_date,ln)作为key，映射value为出现次数1（pub_date取年份）
 # reduceByKey 把key相同的项的值加起来
 
-# date_ln = date_times_ln \
-#     .map(lambda x: ((x[0][0:4], x[2]), 1)) \
-#     .reduceByKey(lambda x, y: x + y) \
-#     .saveAsTextFiles('D:/cloud/done_data/date_lastname')
 times_ln = date_times_ln \
     .map(lambda x: ((x[1], x[2]), 1)) \
     .reduceByKey(lambda x, y: x + y) \
-    #    .saveAsTextFiles('D:/cloud/done_data/times_lastname')
+    .foreachRDD(lambda x: writeFile(x, 0))
 
 date_fn = date_times_fn \
     .map(lambda x: ((x[0][0:4], x[2]), 1)) \
     .reduceByKey(lambda x, y: x + y) \
-    #    .saveAsTextFiles('D:/cloud/done_data/date_firstname')
-# times_fn = date_times_fn \
-#     .map(lambda x: ((x[1], x[2]), 1)) \
-#     .reduceByKey(lambda x, y: x + y) \
-#     .saveAsTextFiles('D:/cloud/done_data/times_firstname')
+    .foreachRDD(lambda x: writeFile(x, 1))
 
 ssc.start()
 ssc.awaitTermination()
