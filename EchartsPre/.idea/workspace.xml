@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="34986cac-1001-4d9d-a77e-e637eeb511bb" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pre.html" beforeDir="false" afterPath="$PROJECT_DIR$/pre.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -44,7 +45,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1603529160571</updated>
-      <workItem from="1603529161621" duration="7274000" />
+      <workItem from="1603529161621" duration="7425000" />
     </task>
     <task id="LOCAL-00001" summary="Echarts完成响应和动态切换">
       <created>1603543275580</created>
