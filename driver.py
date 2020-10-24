@@ -55,5 +55,5 @@ if __name__ == '__main__':
     target_dir = '../data/'  # 目标文件夹
     driver = Driver('http://www.jjwxc.net/', 'C:\\Users\\Kashimiya\\AppData\\Local\\Google\\Chrome\\User Data1')
     # 19代表2019-2020年
-    for i in range(51, 200, 10):
-        driver.write_pages(i, target_dir, year=10)
+    for i in range(1, 200, 10):
+        driver.write_pages(i, target_dir, year=13)
