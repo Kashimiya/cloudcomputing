@@ -35,8 +35,10 @@
                         option.series[0].data = data
                         option.title.text = year + '晋江书籍性向分布'
                         myChart.setOption(option)
-                        i++
-                        year++
+                        if(i<datasets.length){
+                            i++
+                            year++
+                        }
                     }
                 },
             }
