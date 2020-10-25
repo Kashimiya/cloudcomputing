@@ -4,25 +4,37 @@ from pyspark.streaming import StreamingContext
 import json
 import ast
 
-path = 'D:/cloud/done_data/type/type_by_year.json'
+path = 'D:/cloud/done_data/tag/tags_by_year.json'
 
 
 def open_result():
     try:
         result = open(path, 'r', encoding='utf-8')
-        type_dict = json.load(result)
+        tag_dict = json.load(result)
         result.close()
     except Exception as e:
-        type_dict = {}
-    return type_dict
+        tag_dict = {}
+    return tag_dict
 
 
 # 把读入的字符串line处理成列表
 def getList(line):
-    date_disposition = line.split(';')
-    date_disposition[0] = date_disposition[0][0:4]
-    date_disposition[1] = date_disposition[1].replace("'", "")
-    return date_disposition
+    date_tags = line.split(';')
+    date_tags[0] = date_tags[0][0:4].replace("'", "")
+    date_tags[1] = date_tags[1].replace("'", "").replace("None", '').replace('[', '').replace(']', '').replace(' ', '')
+    date_tags[2] = float(date_tags[2])/1000000
+    print(date_tags)
+    return date_tags
+
+
+# 把姓、名的列表展开
+def tagMap(lst):
+    tag_lst = lst[1].split(',')
+    return ((lst[0], tag, lst[2]) for tag in tag_lst)
+
+
+def scoreMap(lst):
+    return (lst[0], lst[1]), lst[2]
 
 
 def writeFile(rdd: RDD):
@@ -50,17 +62,17 @@ def start():
     conf.setMaster('local')
     sc = SparkContext(conf=conf)
     ssc = StreamingContext(sc, 3)
-    lines = ssc.textFileStream('D:/cloud/cleaned_data/type')
+    lines = ssc.textFileStream('D:/cloud/cleaned_data/tag')
 
     print(lines)
     single = lines.map(getList)
-    # date_disposition:    发表日期-性向 RDD
 
-    date_disposition = single \
+    date_tags = single \
+        .flatMap(tagMap) \
         .filter(lambda x: len(x[1]) > 0) \
-        .map(lambda x: ((x[0][0:4], x[1]), 1)) \
+        .map(scoreMap) \
         .reduceByKey(lambda x, y: x + y) \
-        .foreachRDD(lambda x: writeFile(x))
+        .foreachRDD(writeFile)
 
     ssc.start()
     ssc.awaitTermination()

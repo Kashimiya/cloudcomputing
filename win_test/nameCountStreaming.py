@@ -67,40 +67,41 @@ def writeFile(rdd: RDD, f_type):
         result.write(json.dumps(result_dic).encode('gb18030').decode('unicode_escape'))
         result.close()
 
+def start():
 
-conf = SparkConf()
-conf.setAppName('TestDStream')
-conf.setMaster('local')
-sc = SparkContext(conf=conf)
-ssc = StreamingContext(sc, 3)
-lines = ssc.textFileStream('D:/cloud/cleaned_data/name')
+    conf = SparkConf()
+    conf.setAppName('TestDStream')
+    conf.setMaster('local')
+    sc = SparkContext(conf=conf)
+    ssc = StreamingContext(sc, 3)
+    lines = ssc.textFileStream('D:/cloud/cleaned_data/name')
 
-print(lines)
-single = lines.map(getList)
-# date_times_ln:    发表日期-时代-姓 RDD
-date_times_ln = single \
-    .flatMap(lambda x: nameMap(x, 0)) \
-    .filter(lambda x: len(x[2]) > 0)
+    print(lines)
+    single = lines.map(getList)
+    # date_times_ln:    发表日期-时代-姓 RDD
+    date_times_ln = single \
+        .flatMap(lambda x: nameMap(x, 0)) \
+        .filter(lambda x: len(x[2]) > 0)
 
-date_times_ln.pprint(20)
-# date_times_ln:    发表日期-时代-名 RDD
-date_times_fn = single \
-    .flatMap(lambda x: nameMap(x, 1)) \
-    .filter(lambda x: len(x[2]) > 0)
+    date_times_ln.pprint(20)
+    # date_times_ln:    发表日期-时代-名 RDD
+    date_times_fn = single \
+        .flatMap(lambda x: nameMap(x, 1)) \
+        .filter(lambda x: len(x[2]) > 0)
 
-# 对姓的两种reduce:按照发表日期或按照时代
-# map 把(pub_date,ln)作为key，映射value为出现次数1（pub_date取年份）
-# reduceByKey 把key相同的项的值加起来
+    # 对姓的两种reduce:按照发表日期或按照时代
+    # map 把(pub_date,ln)作为key，映射value为出现次数1（pub_date取年份）
+    # reduceByKey 把key相同的项的值加起来
 
-times_ln = date_times_ln \
-    .map(lambda x: ((x[1], x[2]), 1)) \
-    .reduceByKey(lambda x, y: x + y) \
-    .foreachRDD(lambda x: writeFile(x, 0))
+    times_ln = date_times_ln \
+        .map(lambda x: ((x[1], x[2]), 1)) \
+        .reduceByKey(lambda x, y: x + y) \
+        .foreachRDD(lambda x: writeFile(x, 0))
 
-date_fn = date_times_fn \
-    .map(lambda x: ((x[0][0:4], x[2]), 1)) \
-    .reduceByKey(lambda x, y: x + y) \
-    .foreachRDD(lambda x: writeFile(x, 1))
+    date_fn = date_times_fn \
+        .map(lambda x: ((x[0][0:4], x[2]), 1)) \
+        .reduceByKey(lambda x, y: x + y) \
+        .foreachRDD(lambda x: writeFile(x, 1))
 
-ssc.start()
-ssc.awaitTermination()
+    ssc.start()
+    ssc.awaitTermination()

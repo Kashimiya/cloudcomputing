@@ -4,28 +4,28 @@ import json
 # 源
 path_dic1 = {
     "name": 'D:/cloud/new_data/',
-    "type": 'D:/cloud/new_data/'
+    "type": 'D:/cloud/new_data/',
+    "tag": 'D:/cloud/new_data/'
 }
 
 # 目的
 path_dic2 = {
     "name": 'D:/cloud/cleaned_data/name/',
-    "type": 'D:/cloud/cleaned_data/type/'
+    "type": 'D:/cloud/cleaned_data/type/',
+    "tag": 'D:/cloud/cleaned_data/tag/'
 }
 
-usr = "type"
 
-
-def getFileList():
+def getFileList(usr):
     import os
     file_list = os.listdir(path_dic1[usr])
     return file_list
 
 
 # 晋江百家姓
-def nameCount():
+def nameCount(usr):
     import nameHandler
-    for filename in getFileList():
+    for filename in getFileList(usr):
         print(filename)
         f1 = open(path_dic1[usr] + filename, 'r', encoding='utf-8')
         f2 = open(path_dic2[usr] + filename[0:len(filename) - 5] + '.txt', 'w', encoding='utf-8-sig')
@@ -40,8 +40,8 @@ def nameCount():
         time.sleep(2)
 
 
-def typeCount():
-    for filename in getFileList():
+def typeCount(usr):
+    for filename in getFileList(usr):
         print(filename)
         f1 = open(path_dic1[usr] + filename, 'r', encoding='utf-8')
         f2 = open(path_dic2[usr] + filename[0:len(filename) - 5] + '.txt', 'w', encoding='utf-8-sig')
@@ -53,5 +53,16 @@ def typeCount():
         time.sleep(2)
 
 
-if __name__ == '__main__':
-    typeCount()
+def tagCount(usr):
+    for filename in getFileList(usr):
+        print(filename)
+        f1 = open(path_dic1[usr] + filename, 'r', encoding='utf-8')
+        f2 = open(path_dic2[usr] + filename[0:len(filename) - 5] + '.txt', 'w', encoding='utf-8-sig')
+        file1 = json.loads(f1.read().replace('\\', '').replace('	', ''))
+        for line in file1:
+            tags = line['tags']
+            pub_date = line['pub_date'][0:10]
+            score=line["score"]
+            f2.write(pub_date + ";" + tags.__str__() +";"+score+ "\n")
+        time.sleep(2)
+
