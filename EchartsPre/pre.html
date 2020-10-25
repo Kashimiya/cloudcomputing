@@ -6,7 +6,7 @@
     <script src="echarts.js"></script>
 </head>
 <body>
-<div id="main" style="width: 600px;height:400px;"></div>
+<div id="main" style="width: 600px;height:600px; margin: 0 auto"></div>
 <script type="text/javascript">
     var datasets = [
         [
@@ -38,13 +38,20 @@
     var option = {
         title: {
             text: year + '晋江书籍性向分布',
-            x: 'center'
+            x: 'center',
+            y: 30, // 标题垂直位置，值越大越靠下
+            textStyle: {
+                color: 'rgb(0, 0, 0, 0.6)', // 字体颜色
+                fontSize: 20, // 字体大小
+            },
         },
         tooltip: {
             trigger: 'item',
             formatter: "{a} <br/>{b} : {c} 本({d}%)"
         },
         toolbox: {
+            itemSize: 20, // 图标大小
+            y: 30, // 图标垂直位置，值越大越靠下
             show: true,
             feature: {
                 mark: {show: true},
@@ -67,15 +74,25 @@
         series: [{
             name: '书籍数',
             type: 'pie',
-            radius: '55%',
+            radius: '55%', // 饼图半径
             itemStyle: {
                 normal: {
-                    shadowBlur: 200,
-                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    shadowBlur: 300, // 饼图周围阴影大小
+                    shadowColor: 'rgb(249, 205, 173, 0.5)', // 饼图周围阴影颜色
+                    // 是否显示饼图周围的线和字，显示什么内容
+                    label: {
+                        show: true,
+                        formatter: '{b} : {c} 本({d}%)'
+                    },
+                    labelLine: {
+                        show: true
+                    }
                 }
             },
             data: data
-        }]
+        }],
+        // 颜色设置
+        color: ['rgb(254,67,101)', 'rgb(252,157,154)', 'rgb(249,205,173)', 'rgb(200,200,169)', 'rgb(131,175,155)']
     };
     myChart.setOption(option)
 </script>
