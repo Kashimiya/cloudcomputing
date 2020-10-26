@@ -5,6 +5,25 @@ import os
 import shutil
 
 
+def adder():
+    csv_add = open(path + '_to_add.csv', 'r', newline='')
+
+    # add by year
+    dict_reader = csv.DictReader(csv_add)
+
+    # 默认数据按照年份排序
+    for row in dict_reader:
+        if int(row['date'][0:4]) > 2010:
+            csv_add1 = open(path + '_to_add1.csv', 'r', newline='')
+            dict_reader1 = csv.DictReader(csv_add1)
+            for rows in dict_reader1:
+                if rows['name'] == row['name'] and int(rows['date'][0:4]) == int(row['date'][0:4]) - 1:
+                    row['value'] = str(float(rows['value']) + float(row['value']))
+            csv_add1.close()
+        # print(row)
+    csv_add.close()
+
+
 def trans(path):
     jsonData = codecs.open(path + '.json', 'r', 'utf-8')
     csvfile = open(path + '_mid.csv', 'w', newline='')
@@ -35,25 +54,10 @@ def trans(path):
     csvout.close()
     shutil.copyfile(path + '_to_add.csv', path + '_to_add1.csv')
     os.remove(path + '_mid.csv')
+    adder()
 
-    csv_add = open(path + '_to_add.csv', 'r', newline='')
-
+    # 输出累加后的文件
     csvfin = open(path + '.csv', 'w', newline='')
-    # add by year
-    dict_reader = csv.DictReader(csv_add)
-
-    # 默认数据按照年份排序
-    for row in dict_reader:
-        if int(row['date'][0:4]) > 2010:
-            csv_add1 = open(path + '_to_add1.csv', 'r', newline='')
-            dict_reader1 = csv.DictReader(csv_add1)
-            for rows in dict_reader1:
-                if rows['name'] == row['name'] and int(rows['date'][0:4]) == int(row['date'][0:4]) - 1:
-                    row['value'] = str(float(rows['value']) + float(row['value']))
-            csv_add1.close()
-        # print(row)
-    csv_add.close()
-
     csv_add = open(path + '_to_add.csv', 'r', newline='')
     dict_reader2 = csv.DictReader(csv_add)
 
@@ -63,6 +67,7 @@ def trans(path):
     writer = csv.DictWriter(csvfin, fieldnames=["name", "type", "value", "date"])
     for row in dict_reader2:
         writer.writerow(row)
+
     csvfin.close()
     os.remove(path + '_to_add.csv')
     os.remove(path + '_to_add1.csv')
