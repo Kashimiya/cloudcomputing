@@ -1,4 +1,4 @@
-### 数据获取
+## 数据获取
 
 1. 注册一个晋江账号，登录晋江文学城并选择保持登陆一个月。
 2. 前往http://chromedriver.storage.googleapis.com/index.html去下载和你的chrome版本最接近的一个chrome driver。（查看版本方法：地址栏输入chrome://version/）
@@ -11,3 +11,12 @@
    - year=xx 爬取20xx年的内容。其中19是指2019至2020年。
 6. 运行main
 
+## 前端展示
+
+### 性向统计展示
+
+EchartsPre/pre.html 2010-2020性向占比饼图展示
+
+EchartsPre/prePlus.html 2010-2019性向数量变化折线图展示
+
+直接使用浏览器打开即可

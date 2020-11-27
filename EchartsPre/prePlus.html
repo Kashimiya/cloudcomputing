@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>晋江书籍性向统计折线图</title>
+    <script src="echarts.js"></script>
+</head>
+<body>
+<div id="main" style="width: 800px;height:600px; margin: 0 auto"></div>
+<script type="text/javascript">
+    var datasets = [
+        [8449, 7748, 8080, 7978, 8865, 8852, 9898, 10506, 12531, 10070],
+        [6632, 6525, 7043, 6680, 7049, 6108, 5879, 5517, 6458, 5661],
+        [761, 807, 762, 830, 1016, 988, 1151, 1119, 1197, 1132],
+        [319, 223, 183, 138, 115, 118, 99, 99, 71, 49],
+        [70, 95, 125, 183, 559, 695, 680, 699, 811, 936]
+    ]
+    var words = ["言情", "纯爱", "百合", "女尊", "无CP"]
+    var data = datasets[0]
+    var i = 0
+    var myChart = echarts.init(document.getElementById("main"));
+    //指定图表的配置项和数据
+    var option = {
+        title: {
+            text: words[i] + '书籍性向统计折线图',
+            x: 'center',
+            y: 30, // 标题垂直位置，值越大越靠下
+            textStyle: {
+                color: 'rgb(0, 0, 0, 0.6)', // 字体颜色
+                fontSize: 20, // 字体大小
+            },
+        },
+        toolbox: {
+            itemSize: 20, // 图标大小
+            y: 30, // 图标垂直位置，值越大越靠下
+            show: true,
+            feature: {
+                mark: {show: true},
+                saveAsImage: {show: true},
+                myButton: {
+                    show: true,
+                    title: '下一张', //鼠标移动上去显示的文字
+                    icon: 'path://M432.45,595.444c0,2.177-4.661,6.82-11.305,6.82c-6.475,0-11.306-4.567-11.306-6.82s4.852-6.812,11.306-6.812C427.841,588.632,432.452,593.191,432.45,595.444L432.45,595.444z M421.155,589.876c-3.009,0-5.448,2.495-5.448,5.572s2.439,5.572,5.448,5.572c3.01,0,5.449-2.495,5.449-5.572C426.604,592.371,424.165,589.876,421.155,589.876L421.155,589.876z M421.146,591.891c-1.916,0-3.47,1.589-3.47,3.549c0,1.959,1.554,3.548,3.47,3.548s3.469-1.589,3.469-3.548C424.614,593.479,423.062,591.891,421.146,591.891L421.146,591.891zM421.146,591.891',
+                    option: {},
+                    onclick: function (option1){
+                        i = (i + 1) % datasets.length
+                        data = datasets[i]
+                        option.series[0].data = data
+                        option.title.text = words[i] + '书籍性向统计折线图'
+                        myChart.setOption(option)
+                    }
+                }
+            }
+        },
+        legend: {
+            data: ['数量']
+        },
+        xAxis: {
+            data: ["2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019"]
+        },
+        //y轴没有显式设置，根据值自动生成y轴
+        yAxis: {},
+        series: [{
+            name: '数量',
+            type: 'line',
+            data: data
+        }]
+    };
+    //使用刚刚指定的配置项和数据项显示图表
+    myChart.setOption(option);
+</script>
+</body>
+</html>
