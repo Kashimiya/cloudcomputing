@@ -6,29 +6,85 @@
     <script src="echarts.js"></script>
 </head>
 <body>
-<div id="main" style="width: 600px;height:600px; margin: 0 auto"></div>
+<div id="main" style="width: 800px;height:600px; margin: 0 auto"></div>
 <script type="text/javascript">
     var datasets = [
         [
-            {name: '言情', value: 500},
-            {name: '纯爱', value: 500},
-            {name: '百合', value: 30},
-            {name: '女尊', value: 800},
-            {name: '无CP', value: 755}
+            {name: '言情', value: 8449},
+            {name: '纯爱', value: 6632},
+            {name: '百合', value: 761},
+            {name: '女尊', value: 319},
+            {name: '无CP', value: 70}
         ],
         [
-            {name: '言情', value: 5000},
-            {name: '纯爱', value: 5000},
-            {name: '百合', value: 300},
-            {name: '女尊', value: 900},
-            {name: '无CP', value: 605}
+            {name: '言情', value: 7748},
+            {name: '纯爱', value: 6525},
+            {name: '百合', value: 807},
+            {name: '女尊', value: 223},
+            {name: '无CP', value: 95}
         ],
         [
-            {name: '言情', value: 100},
-            {name: '纯爱', value: 0},
-            {name: '百合', value: 2300},
-            {name: '女尊', value: 1900},
-            {name: '无CP', value: 305}
+            {name: '言情', value: 8080},
+            {name: '纯爱', value: 7043},
+            {name: '百合', value: 762},
+            {name: '女尊', value: 183},
+            {name: '无CP', value: 125}
+        ],
+        [
+            {name: '言情', value: 7978},
+            {name: '纯爱', value: 6680},
+            {name: '百合', value: 830},
+            {name: '女尊', value: 138},
+            {name: '无CP', value: 183}
+        ],
+        [
+            {name: '言情', value: 8865},
+            {name: '纯爱', value: 7049},
+            {name: '百合', value: 1016},
+            {name: '女尊', value: 115},
+            {name: '无CP', value: 559}
+        ],
+        [
+            {name: '言情', value: 8852},
+            {name: '纯爱', value: 6108},
+            {name: '百合', value: 988},
+            {name: '女尊', value: 118},
+            {name: '无CP', value: 695}
+        ],
+        [
+            {name: '言情', value: 9898},
+            {name: '纯爱', value: 5879},
+            {name: '百合', value: 1151},
+            {name: '女尊', value: 99},
+            {name: '无CP', value: 680}
+        ],
+        [
+            {name: '言情', value: 10506},
+            {name: '纯爱', value: 5517},
+            {name: '百合', value: 1119},
+            {name: '女尊', value: 99},
+            {name: '无CP', value: 699}
+        ],
+        [
+            {name: '言情', value: 12531},
+            {name: '纯爱', value: 6458},
+            {name: '百合', value: 1197},
+            {name: '女尊', value: 71},
+            {name: '无CP', value: 811}
+        ],
+        [
+            {name: '言情', value: 10700},
+            {name: '纯爱', value: 5661},
+            {name: '百合', value: 1132},
+            {name: '女尊', value: 49},
+            {name: '无CP', value: 936}
+        ],
+        [
+            {name: '言情', value: 7870},
+            {name: '纯爱', value: 4674},
+            {name: '百合', value: 901},
+            {name: '女尊', value: 43},
+            {name: '无CP', value: 934}
         ]
     ]
     var data = datasets[0]
@@ -55,6 +111,7 @@
             show: true,
             feature: {
                 mark: {show: true},
+                saveAsImage: {show: true},
                 myButton: {
                     show: true,
                     title: '下一年', //鼠标移动上去显示的文字
