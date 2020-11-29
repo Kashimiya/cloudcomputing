@@ -1,8 +1,9 @@
+import ast
+import json
+
 from pyspark import SparkContext, SparkConf
 from pyspark.rdd import RDD
 from pyspark.streaming import StreamingContext
-import json
-import ast
 
 path = '../done_data/tag/tags_by_year.json'
 
@@ -22,7 +23,7 @@ def getList(line):
     date_tags = line.split(';')
     date_tags[0] = date_tags[0][0:4].replace("'", "")
     date_tags[1] = date_tags[1].replace("'", "").replace("None", '').replace('[', '').replace(']', '').replace(' ', '')
-    date_tags[2] = float(date_tags[2])/1000000
+    date_tags[2] = float(date_tags[2]) / 1000000
     print(date_tags)
     return date_tags
 

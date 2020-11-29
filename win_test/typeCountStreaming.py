@@ -1,8 +1,9 @@
+import ast
+import json
+
 from pyspark import SparkContext, SparkConf
 from pyspark.rdd import RDD
 from pyspark.streaming import StreamingContext
-import json
-import ast
 
 path = '../done_data/type/type_by_year.json'
 
@@ -46,7 +47,7 @@ def writeFile(rdd: RDD):
 
 def start():
     conf = SparkConf()
-    conf.setAppName('TestDStream')
+    conf.setAppName('TestDStream3')
     conf.setMaster('local')
     sc = SparkContext(conf=conf)
     ssc = StreamingContext(sc, 3)

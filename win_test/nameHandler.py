@@ -41,7 +41,7 @@ def is_name(name):
 
 def is_fn(name):
     for nfn in not_first_name:
-        if nfn in name : return False
+        if nfn in name: return False
     return True
 
 

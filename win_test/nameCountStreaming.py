@@ -1,33 +1,22 @@
+import ast
+import json
+
 from pyspark import SparkContext, SparkConf
 from pyspark.rdd import RDD
 from pyspark.streaming import StreamingContext
-import json
-import ast
-import preHandler
-import time
 
 path = ['../done_data/name/times_lastname.json', '../done_data/name/date_firstname.json']
-time.sleep(10)
-preHandler.nameCount("name")
+save1 = {}
+save2 = {}
 
 
 def open_result(f_type):
     if f_type == 0:
-        try:
-            result1 = open(path[0], 'r', encoding='utf-8')
-            name_dict1 = json.load(result1)
-            result1.close()
-        except Exception as e:
-            name_dict1 = {}
-        return name_dict1
+        global save1
+        return save1
     else:
-        try:
-            result2 = open(path[1], 'r', encoding='utf-8-sig')
-            name_dict2 = json.load(result2)
-            result2.close()
-        except Exception as e:
-            name_dict2 = {}
-        return name_dict2
+        global save2
+        return save2
 
 
 # 把读入的字符串line处理成列表
@@ -51,9 +40,10 @@ def nameMap(lst, nametype):
 
 def writeFile(rdd: RDD, f_type):
     num = rdd.count()
+    global save1
+    global save2
     if num > 0:
         result_dic = open_result(f_type)
-        print(result_dic)
         rdd_c = rdd.collect()
         lst = ast.literal_eval(str(rdd_c))
         for item in lst:
@@ -63,45 +53,49 @@ def writeFile(rdd: RDD, f_type):
                 result_dic[str(key).replace("'", '')] = result_dic[str(key).replace("'", '')] + value
             else:
                 result_dic[str(key).replace("'", '')] = value
+        if f_type == 0:
+            save1 = result_dic
+        if f_type == 1:
+            save2 = result_dic
         result = open(path[f_type], 'w', encoding='utf-8')
         result.write(json.dumps(result_dic).encode('gb18030').decode('unicode_escape'))
         result.close()
 
-def start():
 
+def start():
     conf = SparkConf()
-    conf.setAppName('TestDStream')
+    conf.setAppName('TestDStream2')
     conf.setMaster('local')
     sc = SparkContext(conf=conf)
     ssc = StreamingContext(sc, 3)
     lines = ssc.textFileStream('../cleaned_data/name')
 
-    print(lines)
     single = lines.map(getList)
     # date_times_ln:    发表日期-时代-姓 RDD
-    date_times_ln = single \
-        .flatMap(lambda x: nameMap(x, 0)) \
-        .filter(lambda x: len(x[2]) > 0)
+    # date_times_ln = single \
+    #     .flatMap(lambda x: nameMap(x, 0)) \
+    #     .filter(lambda x: len(x[2]) > 0)
+    # date_times_ln.pprint(2)
 
-    date_times_ln.pprint(20)
     # date_times_ln:    发表日期-时代-名 RDD
     date_times_fn = single \
         .flatMap(lambda x: nameMap(x, 1)) \
         .filter(lambda x: len(x[2]) > 0)
-
+    date_times_fn.pprint(2)
     # 对姓的两种reduce:按照发表日期或按照时代
-    # map 把(pub_date,ln)作为key，映射value为出现次数1（pub_date取年份）
+
+    # map 把(pub_date,ln)作为key
+
+    # 映射key为（时代，名）元组f，value为出现次数1
     # reduceByKey 把key相同的项的值加起来
-
-    times_ln = date_times_ln \
-        .map(lambda x: ((x[1], x[2]), 1)) \
-        .reduceByKey(lambda x, y: x + y) \
-        .foreachRDD(lambda x: writeFile(x, 0))
-
     date_fn = date_times_fn \
         .map(lambda x: ((x[0][0:4], x[2]), 1)) \
         .reduceByKey(lambda x, y: x + y) \
         .foreachRDD(lambda x: writeFile(x, 1))
 
+    # times_ln = date_times_ln \
+    #     .map(lambda x: ((x[1], x[2]), 1)) \
+    #     .reduceByKey(lambda x, y: x + y) \
+    #     .foreachRDD(lambda x: writeFile(x, 0))
     ssc.start()
     ssc.awaitTermination()

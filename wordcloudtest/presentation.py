@@ -1,11 +1,10 @@
 # -*- coding:utf-8 -*-
-import matplotlib.pyplot as plt
-import jieba
-from wordcloud import WordCloud
 import json
 
-path_from = "D:/大三上/云计算/data/"
-path_to = "D:/大三上/云计算/爬虫/wordcloudtest/pic/"
+from wordcloud import WordCloud
+
+path_from = "../done_data/name/"
+path_to = "../pic/"
 
 text_firstname = open(path_from + "date_firstname.json", 'rb').read().decode("utf-8")
 text_firstname = json.loads(text_firstname)
@@ -46,13 +45,13 @@ for item in ans1:
     )
     # 产生词云
     temp = dict(sorted(ans1[item].items(), key=lambda d: d[1], reverse=True))
-    ans={}
-    i=0
+    ans = {}
+    i = 0
     for item1 in temp:
-            if i>=80:
-                    break
-            ans[item1]=temp[item1]
-            i=i+1
+        if i >= 80:
+            break
+        ans[item1] = temp[item1]
+        i = i + 1
     wc.generate_from_frequencies(ans)
     # 保存图片
     wc.to_file(path_to + item + "名.png")  # 按照设置的像素宽高度保存绘制好的词云图，比下面程序显示更清晰
@@ -78,10 +77,10 @@ for item in ans2:
     ans = {}
     i = 0
     for item1 in temp:
-            if i >= 80:
-                    break
-            ans[item1] = temp[item1]
-            i=i+1
+        if i >= 80:
+            break
+        ans[item1] = temp[item1]
+        i = i + 1
     wc.generate_from_frequencies(ans)
     # 保存图片
     wc.to_file(path_to + item + "姓.png")

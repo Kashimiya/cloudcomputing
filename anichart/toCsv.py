@@ -1,10 +1,10 @@
-import csv
 import codecs
+import csv
 import os
-import shutil
+
 
 def trans(path):
-    jsonData = codecs.open(path + '.json', 'r','gb2312')
+    jsonData = codecs.open(path + '.json', 'r', 'gb2312')
     csvfile = open(path + '_mid.csv', 'w', newline='')
     csvout = open(path + '_to_add.csv', 'w', newline='')
 
@@ -52,5 +52,5 @@ def trans(path):
 
 
 if __name__ == '__main__':
-    path = str("/Users/wangxinyi/Documents/GitHub/cloudcomputing/done_data/tag/tags_by_year")  # 获取path参数
+    path = str("./tags_by_year")  # 获取path参数
     trans(path)
