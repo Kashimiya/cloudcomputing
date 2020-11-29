@@ -8,7 +8,7 @@ import time
 
 path = ['../done_data/name/times_lastname.json', '../done_data/name/date_firstname.json']
 time.sleep(10)
-preHandler.nameCount()
+preHandler.nameCount("name")
 
 
 def open_result(f_type):
