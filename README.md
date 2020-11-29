@@ -33,8 +33,8 @@ EchartsPre/prePlus.html 2010-2019性向数量变化折线图展示
 
 直接使用浏览器打开即可
 
-## 词云图展示
+### 词云图展示
 
-修改presentation.py中的path_to、path_from，然后运行该文件。
+修改presentation.py中的path_to（输出路径）、path_from（来源路径），然后运行该文件。
 
 运行结果存储在path_to指向的目录下
