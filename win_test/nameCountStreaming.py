@@ -6,7 +6,7 @@ import ast
 import preHandler
 import time
 
-path = ['D:/cloud/done_data/name/times_lastname.json', 'D:/cloud/done_data/name/date_firstname.json']
+path = ['../done_data/name/times_lastname.json', '../done_data/name/date_firstname.json']
 time.sleep(10)
 preHandler.nameCount()
 
@@ -74,7 +74,7 @@ def start():
     conf.setMaster('local')
     sc = SparkContext(conf=conf)
     ssc = StreamingContext(sc, 3)
-    lines = ssc.textFileStream('D:/cloud/cleaned_data/name')
+    lines = ssc.textFileStream('../cleaned_data/name')
 
     print(lines)
     single = lines.map(getList)

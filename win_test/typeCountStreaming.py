@@ -4,7 +4,7 @@ from pyspark.streaming import StreamingContext
 import json
 import ast
 
-path = 'D:/cloud/done_data/type/type_by_year.json'
+path = '../done_data/type/type_by_year.json'
 
 
 def open_result():
@@ -50,7 +50,7 @@ def start():
     conf.setMaster('local')
     sc = SparkContext(conf=conf)
     ssc = StreamingContext(sc, 3)
-    lines = ssc.textFileStream('D:/cloud/cleaned_data/type')
+    lines = ssc.textFileStream('../cleaned_data/type')
 
     print(lines)
     single = lines.map(getList)

@@ -11,6 +11,18 @@
    - year=xx 爬取20xx年的内容。xx范围为10-19，其中19是指2019至2020年。
 6. 运行main
 
+注：data里是爬取到的数据的示例。
+
+## Spark Streaming
+
+注：本代码为windows环境下spark运行的测试代码，方便使用，集群环境下的代码结构进行过调整，将按照层次划分的代码结构修改为按照命题划分。
+
+1. 在windows环境下完成spark基本配置
+
+2. 命令行spark-shell
+3. 进入win_test文件夹，选择streamingDriver文件，直接运行
+4. 可以在sreamingDriver中更换运行的进程
+
 ## 前端展示
 
 ### 性向统计展示

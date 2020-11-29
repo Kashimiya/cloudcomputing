@@ -3,16 +3,16 @@ import json
 
 # 源
 path_dic1 = {
-    "name": 'D:/cloud/new_data/',
-    "type": 'D:/cloud/new_data/',
-    "tag": 'D:/cloud/new_data/'
+    "name": '../data/',
+    "type": '../data/',
+    "tag": '../data/'
 }
 
 # 目的
 path_dic2 = {
-    "name": 'D:/cloud/cleaned_data/name/',
-    "type": 'D:/cloud/cleaned_data/type/',
-    "tag": 'D:/cloud/cleaned_data/tag/'
+    "name": '../cleaned_data/name/',
+    "type": '../cleaned_data/type/',
+    "tag": '../cleaned_data/tag/'
 }
 
 
