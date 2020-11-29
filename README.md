@@ -21,7 +21,7 @@
 
 2. 命令行spark-shell
 3. 进入win_test文件夹，选择streamingDriver文件，直接运行
-4. 可以在sreamingDriver中更换运行的进程
+4. 可以在streamingDriver中更换运行的进程
 
 ## 前端展示
 
