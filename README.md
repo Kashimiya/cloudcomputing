@@ -20,9 +20,3 @@ EchartsPre/pre.html 2010-2020性向占比饼图展示
 EchartsPre/prePlus.html 2010-2019性向数量变化折线图展示
 
 直接使用浏览器打开即可
-
-## 词云图展示
-
-更改presentation.py的path_to、path_from参数之后直接运行该文件
-
-运行完成之后直接到文件路径去获取词云图

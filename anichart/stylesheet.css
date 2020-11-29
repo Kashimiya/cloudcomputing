@@ -123,7 +123,7 @@ input {
 
 /* 龙牙绿 */
 .M {
-    fill: #006666
+    fill: #7FFFD4
 }
 
 .L {
@@ -131,15 +131,15 @@ input {
 }
 
 .N {
-    fill: #EB0000
+    fill: #FFB6C1
 }
 
 .O {
-    fill: #009714
+    fill: #7FFFD4
 }
 
 .P {
-    fill: #B11111
+    fill: #DC143C
 }
 
 .Q {
@@ -179,7 +179,7 @@ input {
 }
 
 .Z {
-    fill: #C0620B
+    fill: #F4A460
 }
 
 .H {
@@ -219,9 +219,9 @@ input {
 }
 
 .B {
-    fill: #0A83E6
+    fill: #18AAD8
 }
 
 .A {
-    fill: #CF9237
+    fill: #E3985E
 }
